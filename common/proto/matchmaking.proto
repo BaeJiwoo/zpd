@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package protocol;
+
+message MatchRequest
+{
+}
+
+message MatchResponse
+{
+    uint64 player_id = 1;
+}
+
+message CancelMatchRequest
+{
+}
+
+message CancelMatchResponse
+{
+}
+
+message LeaveSessionRequest
+{
+}
+
+message LeaveSessionResponse
+{
+    uint64 session_id = 1;
+}
+
+message MatchFound
+{
+    uint64 session_id = 1;
+    repeated uint64 player_ids = 2;
+}
+
+message SessionPlayerLeft
+{
+    uint64 session_id = 1;
+    uint64 player_id = 2;
+}

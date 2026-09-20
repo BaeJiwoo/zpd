@@ -15,6 +15,15 @@ enum class MessageCode : std::uint8_t
     PositionUpdateRequest = 8,
     GameCommandRequest = 9,
 
+    MatchRequest = 16,
+    CancelMatchRequest = 17,
+    LeaveSessionRequest = 18,
+    MatchResponse = 144,
+    CancelMatchResponse = 145,
+    LeaveSessionResponse = 146,
+    MatchFound = 208,
+    SessionPlayerLeft = 209,
+
     EchoResponse = 129,
     PingResponse = 130,
     EnterResponse = 131,
@@ -35,6 +44,12 @@ enum class MessageCode : std::uint8_t
 constexpr MessageCode ResponseCodeFor(MessageCode request) noexcept
 {
     switch (request) {
+    case MessageCode::MatchRequest:
+        return MessageCode::MatchResponse;
+    case MessageCode::CancelMatchRequest:
+        return MessageCode::CancelMatchResponse;
+    case MessageCode::LeaveSessionRequest:
+        return MessageCode::LeaveSessionResponse;
     case MessageCode::EchoRequest:
         return MessageCode::EchoResponse;
     case MessageCode::PingRequest:

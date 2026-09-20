@@ -39,10 +39,10 @@ ctest --preset release
 ```
 
 The server tests cover packet framing, fragmented and coalesced input, connection reuse,
-handler restart, valid packets without responses, and disconnection on malformed frames.
+handler restart, binary packet echo, send-failure recovery, and disconnection on malformed frames.
 
 The mock room client and shared protocol schemas are retained as references. The server
-currently has no Echo, Ping, entry, room, chat, position, or game-command handlers, so the
+implements FIFO matchmaking (request codes 16-18) and echoes other raw packets without interpreting the old service commands, so the
 interactive service commands and old client/server regression scenarios cannot succeed.
 
 ## Project structure
@@ -81,7 +81,7 @@ Executables remain under `out/build/windows-x64/Debug` or `Release`, so existing
 
 ## Server behavior
 
-The 8-byte big-endian packet header carries length, message code, error and request ID. Protobuf bodies are limited to 4088 bytes. One logic worker waits for connected, packet-received and disconnected events and removes them from the queue. Its event handling branches are intentionally empty. No service state, periodic ticks, responses or broadcasts are generated. Protocol and service design documents describe reference behavior, not currently implemented services.
+The 8-byte big-endian packet header carries length, message code, error and request ID. Protobuf bodies are limited to 4088 bytes. One logic worker waits for connected, packet-received and disconnected events and removes them from the queue. Each branch calls a separate handler. Connection and disconnection handlers maintain player and session state. Matchmaking requests are dispatched to dedicated handlers; other packets are logged and echoed with their code, error, request ID and binary payload unchanged. Transport send/disconnect callbacks are supplied at startup, and send failure disconnects that connection without stopping the worker. Matchmaking owns a FIFO waiting queue and session membership on the logic worker. Every two queued players receive a MatchFound notification; cancellation and disconnect remove queued players, and leaving or disconnecting notifies remaining session members. Empty sessions are deleted. There are no periodic game ticks or automatic session backfill. This raw echo does not implement the request/response codes expected by the room client. The old room/chat/position design documents remain reference behavior. Matchmaking uses common/proto/matchmaking.proto; request/response codes are 16/144, 17/145, 18/146 and notifications are 208 (MatchFound) and 209 (SessionPlayerLeft). Requests require a nonzero request ID and zero error. Duplicate queue requests or invalid state return error 23. PlayersPerSession in server/include/ServerLimits.hpp configures 2-16 players; TryMatchPlayers in server/src/PacketHandler.Matchmaking.cpp controls the FIFO policy. A TCP connection is queued only after MatchRequest; the Unity client sends it automatically on connection. IDs are temporary, with no authentication or reconnect recovery.
 
 Sends are serialized per connection. Each connection allows up to 256 queued sends of at most 4096 bytes each. A full queue or send failure disconnects that client. Pending I/O completions are drained before connection slots are reused or released. Peer FIN and server shutdown close the connection without guaranteeing delivery of queued responses.
 
@@ -92,3 +92,4 @@ WinSock2 is provided by the Windows SDK. Protobuf is installed through the vcpkg
 For Visual Studio 2022, change the preset generator to `Visual Studio 17 2022`, set the preset minimum CMake version to 3.25 or later, and use a separate build directory.
 
 References: [vcpkg CMake integration](https://learn.microsoft.com/en-us/vcpkg/users/buildsystems/cmake-integration), [VS Code CMake presets](https://github.com/microsoft/vscode-cmake-tools/blob/main/docs/cmake-presets.md), [asynchronous socket closure](https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-closesocket).
+

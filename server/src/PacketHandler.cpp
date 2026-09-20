@@ -40,6 +40,11 @@ void PacketHandler::Stop()
     m_eventQueue = {};
     m_pendingBytesByConnection.clear();
     m_liveConnections.clear();
+    m_players.clear();
+    m_sessions.clear();
+    m_matchQueue.clear();
+    m_nextPlayerId = 1;
+    m_nextSessionId = 1;
     m_sendPacket = {};
     m_disconnect = {};
 }
@@ -50,9 +55,7 @@ void PacketHandler::LogicWorker()
         ServerEvent event;
         {
             std::unique_lock lock(m_mutex);
-            m_queueReady.wait(lock, [this] {
-                return !m_logicRunning || !m_eventQueue.empty();
-            });
+            m_queueReady.wait(lock, [this] { return !m_logicRunning || !m_eventQueue.empty(); });
             if (!m_logicRunning)
                 return;
 
@@ -63,7 +66,6 @@ void PacketHandler::LogicWorker()
                 continue;
         }
 
-        // Keep service work outside the queue lock; dispatch new services from these handlers.
         try {
             switch (event.type) {
             case ServerEventType::Connected:
@@ -90,17 +92,44 @@ void PacketHandler::LogicWorker()
 
 void PacketHandler::HandleConnected(ConnectionKey connection)
 {
+    if (m_nextPlayerId == 0)
+        throw std::runtime_error("player ID exhausted");
+    m_players.emplace(connection, Player{m_nextPlayerId++, 0, false});
     std::osyncstream(std::cout) << "[logic connected] client=" << connection.slotIndex
                                 << " generation=" << connection.generation << '\n';
 }
 
 void PacketHandler::HandlePacketReceived(ConnectionKey connection, const Packet& packet)
 {
+    const bool matchRequest = packet.code == MessageCode::MatchRequest ||
+                              packet.code == MessageCode::CancelMatchRequest ||
+                              packet.code == MessageCode::LeaveSessionRequest;
+    if (matchRequest) {
+        if (packet.requestId == 0 || packet.error != ErrorCode::None) {
+            SendError(connection, packet, ErrorCode::InvalidRequestStatus);
+            return;
+        }
+        if (!m_players.contains(connection))
+            throw std::runtime_error("player not found");
+        switch (packet.code) {
+        case MessageCode::MatchRequest:
+            HandleMatchRequest(connection, packet);
+            break;
+        case MessageCode::CancelMatchRequest:
+            HandleCancelMatch(connection, packet);
+            break;
+        case MessageCode::LeaveSessionRequest:
+            HandleLeaveSession(connection, packet);
+            break;
+        default:
+            break;
+        }
+        return;
+    }
     std::osyncstream(std::cout) << "[logic echo] client=" << connection.slotIndex
                                 << " code=" << static_cast<unsigned>(packet.code)
                                 << " requestId=" << packet.requestId
                                 << " payloadBytes=" << packet.payload.size() << '\n';
-    // Raw packet echo: preserve code, error, request ID and binary payload.
     const auto bytes = packet.Serialize();
     if (!m_sendPacket(connection, bytes.data(), static_cast<std::uint32_t>(bytes.size())))
         throw std::runtime_error("echo send failed");
@@ -108,6 +137,9 @@ void PacketHandler::HandlePacketReceived(ConnectionKey connection, const Packet&
 
 void PacketHandler::HandleDisconnected(ConnectionKey connection)
 {
+    RemoveFromMatchQueue(connection);
+    RemoveFromSession(connection);
+    m_players.erase(connection);
     std::osyncstream(std::cout) << "[logic disconnected] client=" << connection.slotIndex
                                 << " generation=" << connection.generation << '\n';
 }
@@ -117,7 +149,6 @@ void PacketHandler::DisconnectFailedConnection(ConnectionKey connection)
     try {
         m_disconnect(connection);
     } catch (...) {
-        // Always remove queued work for this connection, even if the transport callback fails.
     }
     EnqueueDisconnected(connection);
 }

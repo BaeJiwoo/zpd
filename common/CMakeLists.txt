@@ -5,6 +5,7 @@ add_library(protocol STATIC
     proto/chat.proto
     proto/position.proto
     proto/game.proto
+    proto/matchmaking.proto
 )
 target_compile_features(protocol PUBLIC cxx_std_20)
 target_link_libraries(protocol PUBLIC protobuf::libprotobuf)

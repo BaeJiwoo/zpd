@@ -1,4 +1,4 @@
-add_library(server_core STATIC src/PacketHandler.cpp)
+add_library(server_core STATIC src/PacketHandler.cpp src/PacketHandler.Matchmaking.cpp)
 target_include_directories(server_core PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 target_link_libraries(server_core PUBLIC project_options protocol ws2_32)
 
