@@ -3,7 +3,7 @@ target_include_directories(server_core PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/inclu
 target_link_libraries(server_core PUBLIC project_options protocol ws2_32)
 
 add_executable(zpd-server src/main.cpp src/winsock.cpp)
-target_link_libraries(zpd-server PRIVATE server_core)
+target_link_libraries(zpd-server PRIVATE server_core console_support)
 
 if(BUILD_TESTING)
     add_executable(zpd-server-tests tests/server_tests.cpp)

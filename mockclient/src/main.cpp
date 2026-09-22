@@ -1,6 +1,9 @@
 #include "ClientApplication.hpp"
+#include "ConsoleExit.hpp"
 
 int main(int argc, char* argv[])
 {
-    return RunChatClient(argc, argv);
+    const int exitCode = RunChatClient(argc, argv);
+    WaitForConsoleExit("Client", exitCode);
+    return exitCode;
 }

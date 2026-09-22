@@ -31,6 +31,11 @@ In VS Code, select the `windows-x64` configure preset. Press Ctrl+Shift+B to bui
 
 The server listens on all IPv4 interfaces at TCP port 20000 and accepts up to 1000 connections. Supply a port argument to override the default, such as `zpd-server.exe 9100`. Press Enter or close standard input to stop the server.
 
+Both executables print their exit status after releasing network resources. In an interactive
+console, press Enter at `Press Enter to exit...` to close the program, including after startup
+errors. For the server, the first Enter stops the server and the second Enter closes the program.
+Redirected input and automated runs exit without this additional pause.
+
 ## Tests
 
 ```powershell

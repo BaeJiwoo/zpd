@@ -1,14 +1,14 @@
 #include "ZPDServer.hpp"
 #include "NetworkSettings.hpp"
-
-
+#include "ConsoleExit.hpp"
 #include <charconv>
 #include <cstdlib>
 #include <iostream>
 #include <string>
 #include <string_view>
 
-int main(int argc, char* argv[])
+namespace {
+int RunServer(int argc, char* argv[])
 {
     unsigned int port = NetworkSettings::DefaultPort;
     if (argc > 2) {
@@ -37,4 +37,12 @@ int main(int argc, char* argv[])
     std::getline(std::cin, line);
     server.Stop();
     return EXIT_SUCCESS;
+}
+}
+
+int main(int argc, char* argv[])
+{
+    const int exitCode = RunServer(argc, argv);
+    WaitForConsoleExit("Server", exitCode);
+    return exitCode;
 }

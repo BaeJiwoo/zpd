@@ -1,3 +1,7 @@
+add_library(console_support STATIC src/ConsoleExit.cpp)
+target_include_directories(console_support PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
+target_link_libraries(console_support PRIVATE project_options)
+
 add_library(protocol STATIC
     proto/echo.proto
     proto/session.proto

@@ -10,4 +10,4 @@ target_include_directories(chat_client PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/inclu
 target_link_libraries(chat_client PUBLIC project_options protocol ws2_32)
 
 add_executable(zpd-client src/main.cpp)
-target_link_libraries(zpd-client PRIVATE chat_client)
+target_link_libraries(zpd-client PRIVATE chat_client console_support)
