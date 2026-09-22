@@ -11,7 +11,7 @@
       "problemMatcher": []
     },
     {
-      "label": "Client: Run Room Chat",
+      "label": "Client: Run Packet Client",
       "type": "process",
       "command": "${workspaceFolder}/out/build/windows-x64/Debug/zpd-client.exe",
       "options": { "cwd": "${workspaceFolder}" },

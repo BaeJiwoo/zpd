@@ -46,9 +46,26 @@ ctest --preset release
 The server tests cover packet framing, fragmented and coalesced input, connection reuse,
 handler restart, binary packet echo, send-failure recovery, and disconnection on malformed frames.
 
-The mock room client and shared protocol schemas are retained as references. The server
-implements FIFO matchmaking (request codes 16-18) and echoes other raw packets without interpreting the old service commands, so the
-interactive service commands and old client/server regression scenarios cannot succeed.
+The console client follows the current packet server: FIFO matchmaking (request codes 16-18)
+and raw packet echo. Room/chat/game commands are not supported by this client.
+
+| Command | Behavior |
+| --- | --- |
+| `/match` | Join the matchmaking queue; print the player ID and eventual session/members. |
+| `/cancel` | Cancel a queued matchmaking request. |
+| `/leave` | Leave the current session. |
+| `/status` | Show the locally tracked player ID, queue state, session and members. |
+| `/ping` | Send an empty packet and print `Pong` when it is echoed. |
+| `/echo <text>` | Send text and verify the echoed data; long text is split into packets. |
+| `/help` | Show supported commands. |
+| `/quit` | Disconnect, then wait for Enter in an interactive console. |
+
+Connections start idle; send `/match` in two clients to form a session with the default
+server configuration. Match and player-leave notifications arrive while waiting for input.
+Invalid state requests print a server error without disconnecting. Plain text and unsupported
+commands are rejected locally. There is no authentication, room chat, movement or game command UI.
+The client integration test covers two-client matching, cancellation, leaving, disconnection
+notifications, ping/echo and rejection of unsupported commands and invalid replies.
 
 ## Project structure
 
@@ -75,7 +92,7 @@ root/
 └── vcpkg.json
 ```
 
-- `mockclient`: the console room chat client and its process regression tests.
+- `mockclient`: the console packet/matchmaking client and its process regression tests.
 - `common`: Protobuf schemas, message/error codes, packet framing, protocol limits, shared C++ network defaults and serialization helpers. See [Unity sharing](common/README.md).
 - `server`: IOCP transport, connection management, packet framing, a basic event worker and server tests.
 - `docs`: requirements, protocol specification and design notes.

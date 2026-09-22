@@ -1,6 +1,6 @@
 #include "ClientApplication.hpp"
 #include "ClientResources.hpp"
-#include "RoomChatClient.hpp"
+#include "PacketClient.hpp"
 #include "ConsoleInput.hpp"
 #include "ClientSettings.hpp"
 #include "NetworkSettings.hpp"
@@ -8,7 +8,7 @@
 #include <iostream>
 #include <string_view>
 
-int RunChatClient(int argc, char* argv[])
+int RunPacketClient(int argc, char* argv[])
 {
     Utf8ConsoleOutput consoleEncoding;
     unsigned int port = NetworkSettings::DefaultPort;
@@ -60,11 +60,12 @@ int RunChatClient(int argc, char* argv[])
 
     std::cout
         << "Connected to 127.0.0.1:" << port << '\n'
-        << "Development entry only (no authentication). Commands:\n"
+        << "Packet server client (no authentication). Commands:\n"
         << ClientSettings::CommandHelp << '\n'
-        << "Text sends chat to everyone in your room. Notifications arrive while waiting for input."
+        << "Use /match to queue, /cancel to cancel, /leave to leave a session.\n"
+        << "Notifications arrive while waiting for input. Use /echo <text> to send text."
         << std::endl;
-    RoomChatClient client(connection.socket);
+    PacketClient client(connection.socket);
     client.Start();
     RunConsoleInput(client);
     client.Stop();

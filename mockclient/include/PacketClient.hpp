@@ -1,5 +1,5 @@
-#ifndef ZPD_ROOMCHATCLIENT_HPP
-#define ZPD_ROOMCHATCLIENT_HPP
+#ifndef ZPD_PACKETCLIENT_HPP
+#define ZPD_PACKETCLIENT_HPP
 #include "Packet.hpp"
 #include "PendingRequest.hpp"
 #include <WinSock2.h>
@@ -9,13 +9,12 @@
 #include <set>
 #include <string>
 #include <thread>
-#include <array>
 
-class RoomChatClient
+class PacketClient
 {
   public:
-    explicit RoomChatClient(SOCKET peer);
-    ~RoomChatClient();
+    explicit PacketClient(SOCKET peer);
+    ~PacketClient();
 
     void Start();
     bool IsRunning() const;
@@ -27,11 +26,10 @@ class RoomChatClient
   private:
     void PrintStatus(const std::string& text);
     void CloseWithError(const std::string& text);
-    void ShowMembers();
+    void ShowStatus();
     bool SendRequest(Packet packet, PendingRequest pending);
     bool ReceiveExact(char* bytes, std::size_t size);
     template <typename Message> Message ParseMessage(const std::vector<char>& payload);
-    template <typename Message> void ApplyRoomSnapshot(const std::vector<char>& payload);
     void HandleServerPacket(const PacketHeader& header, const std::vector<char>& payload);
     void ReceivePackets();
     SOCKET m_socket;
@@ -42,10 +40,8 @@ class RoomChatClient
     std::uint32_t m_nextRequestId = 1;
     std::map<std::uint32_t, PendingRequest> m_pending;
     std::uint64_t m_playerId = 0;
-    std::uint64_t m_roomId = 0;
-    std::uint32_t m_capacity = 0;
+    std::uint64_t m_sessionId = 0;
+    bool m_queued = false;
     std::set<std::uint64_t> m_members;
-    std::map<std::uint64_t, std::array<float, 3>> m_positions;
-    std::uint64_t m_positionTick = 0;
 };
-#endif // ZPD_ROOMCHATCLIENT_HPP
+#endif // ZPD_PACKETCLIENT_HPP

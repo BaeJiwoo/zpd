@@ -1,10 +1,10 @@
 #include "ConsoleInput.hpp"
-#include "RoomChatClient.hpp"
+#include "PacketClient.hpp"
 #include "ClientSettings.hpp"
 #include <Windows.h>
 #include <iostream>
 
-void RunConsoleInput(RoomChatClient& client)
+void RunConsoleInput(PacketClient& client)
 {
     const HANDLE input = GetStdHandle(STD_INPUT_HANDLE);
     DWORD mode = 0;

@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug Room Chat Client",
+      "name": "Debug Packet Client",
       "type": "cppvsdbg",
       "request": "launch",
       "program": "${workspaceFolder}/out/build/windows-x64/Debug/zpd-client.exe",

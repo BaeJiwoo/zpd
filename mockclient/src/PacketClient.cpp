@@ -1,32 +1,32 @@
-#include "RoomChatClient.hpp"
+#include "PacketClient.hpp"
 #include <iostream>
 #include <utility>
 
-RoomChatClient::RoomChatClient(SOCKET peer) : m_socket(peer)
+PacketClient::PacketClient(SOCKET peer) : m_socket(peer)
 {
 }
 
-RoomChatClient::~RoomChatClient()
+PacketClient::~PacketClient()
 {
     Stop();
 }
 
-void RoomChatClient::Start()
+void PacketClient::Start()
 {
     m_receiver = std::thread([this] { ReceivePackets(); });
 }
 
-bool RoomChatClient::IsRunning() const
+bool PacketClient::IsRunning() const
 {
     return m_running;
 }
 
-bool RoomChatClient::HasFailed() const
+bool PacketClient::HasFailed() const
 {
     return m_failed;
 }
 
-void RoomChatClient::Stop()
+void PacketClient::Stop()
 {
     m_running = false;
     shutdown(m_socket, SD_BOTH);
@@ -34,13 +34,13 @@ void RoomChatClient::Stop()
         m_receiver.join();
 }
 
-void RoomChatClient::PrintStatus(const std::string& text)
+void PacketClient::PrintStatus(const std::string& text)
 {
     std::lock_guard lock(m_mutex);
     std::cout << text << std::endl;
 }
 
-void RoomChatClient::CloseWithError(const std::string& text)
+void PacketClient::CloseWithError(const std::string& text)
 {
     m_failed = true;
     m_running = false;
@@ -48,15 +48,17 @@ void RoomChatClient::CloseWithError(const std::string& text)
     PrintStatus(text);
 }
 
-void RoomChatClient::ShowMembers()
+void PacketClient::ShowStatus()
 {
-    std::cout << "Room " << m_roomId << " (" << m_members.size() << '/' << m_capacity << "):";
+    std::cout << "Player: " << m_playerId << ", state: "
+              << (m_sessionId ? "in session" : m_queued ? "queued" : "idle")
+              << ", session: " << m_sessionId << ", members:";
     for (auto id : m_members)
         std::cout << ' ' << id;
     std::cout << std::endl;
 }
 
-bool RoomChatClient::SendRequest(Packet packet, PendingRequest pending)
+bool PacketClient::SendRequest(Packet packet, PendingRequest pending)
 {
     {
         std::lock_guard lock(m_mutex);
@@ -81,7 +83,7 @@ bool RoomChatClient::SendRequest(Packet packet, PendingRequest pending)
     return true;
 }
 
-bool RoomChatClient::ReceiveExact(char* bytes, std::size_t size)
+bool PacketClient::ReceiveExact(char* bytes, std::size_t size)
 {
     std::size_t offset = 0;
     while (offset < size) {
