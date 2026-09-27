@@ -22,6 +22,21 @@ dotnet run --project src/Zpd.Api --launch-profile http
 `ConnectionStrings__DefaultConnection`으로 설정합니다. `.env` 파일은 자동 로드하지 않습니다.
 운영 환경에서도 이 환경 변수로 접속 정보를 전달할 수 있습니다.
 
+## VS Code 개발
+
+저장소 루트에서 `code .`로 폴더를 엽니다.
+권장 확장인 **C# Dev Kit**과 **REST Client**를 설치합니다.
+위의 User Secrets 설정을 먼저 완료한 뒤 다음 단축키를 사용합니다.
+
+- `F5`: `Zpd.Api (HTTP)` 구성으로 빌드 및 디버깅 시작
+- `Shift+F5`: 디버깅 종료
+- `Ctrl+Shift+B`: 솔루션 빌드
+- `src/Zpd.Api/Zpd.Api.http`의 **Send Request**: 연결 테스트 요청 전송
+
+디버깅은 `launchSettings.json`의 `http` 프로필을 사용합니다.
+API 주소는 `http://localhost:5089`입니다.
+컨트롤러에 중단점을 설정하고 요청하면 해당 위치에서 실행이 멈춥니다.
+
 ## 연결 확인
 
 ```powershell
