@@ -1,0 +1,21 @@
+# Local migration backups (original repositories, bundles and caches)
+/.migration-backup/
+
+# Original checkout names, used only during the history import
+/zpd-client/
+/zpd-server/
+/zpd-apiserver/
+
+# Local tools, output and credentials
+/.tools/
+/artifacts/
+**/bin/
+**/obj/
+.vs/
+.idea/
+*.user
+*.suo
+~$*
+.env
+.env.*
+!.env.example
