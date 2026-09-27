@@ -1,0 +1,9 @@
+@HostAddress = http://localhost:5089
+
+### MySQL connection check
+GET {{HostAddress}}/api/connection
+Accept: application/json
+
+### OpenAPI (Development only)
+GET {{HostAddress}}/openapi/v1.json
+Accept: application/json
