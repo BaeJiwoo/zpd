@@ -2,7 +2,7 @@
 
 A Windows C++20 packet server skeleton using WinSock2, IOCP, Protobuf, CMake and vcpkg.
 
-See [the MO requirements](../docs/archive/socket-server/MO_서버_단계별_개발_요구사항.md) and [wire protocol](../contracts/realtime/README.md).
+See the current [wire protocol](../contracts/realtime/README.md). The [MO requirements](../docs/archive/socket-server/MO_서버_단계별_개발_요구사항.md) are a historical design reference.
 
 ## Requirements
 

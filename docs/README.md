@@ -2,6 +2,7 @@
 
 - [전체 구조](ARCHITECTURE.md): 현재 구현과 각 실행 프로젝트의 책임.
 - [이력 통합과 복구](MIGRATION.md): 원본 브랜치·커밋, 백업, 새 작업 위치.
+- [이전 검증 결과](VALIDATION.md): 빌드·통합 테스트·Unity·새 복제본 검증과 범위.
 - [기여 규칙](../CONTRIBUTING.md): 브랜치, 검증, Unity 파일과 계약 변경.
 - [API 설계 초안](design/API_IMPLEMENTATION.md): 미구현 기능·미결정 정책.
 - [클라이언트 작업 목록](../client/Docs/CLIENT_TASKS.md): 후속 구현 작업.
