@@ -15,12 +15,11 @@ API 실행과 기존 스모크 테스트에는 정상 연결되는 DB가 필수�
 아래 명령은 모노레포의 `api-server` 폴더에서 실행합니다. 전체 빌드·검증은 [루트 README](../README.md)를 참고하세요.
 
 ```powershell
-dotnet restore
-dotnet tool restore
 dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=localhost;Port=3306;Database=zpd;User ID=zpd;Password=YOUR_PASSWORD;" --project src/Zpd.Api
 dotnet run --project src/Zpd.Api --launch-profile http
 ```
 
+`dotnet run`에서 패키지 복원과 빌드를 함께 수행합니다.
 `appsettings.json`의 연결 문자열은 비밀번호가 없는 예시입니다.
 실제 접속 정보는 개발 환경의 User Secrets 또는 환경 변수
 `ConnectionStrings__DefaultConnection`으로 설정합니다. `.env` 파일은 자동 로드하지 않습니다.
@@ -71,11 +70,12 @@ src/Zpd.Api/
 ## 모델 추가 이후
 
 엔티티와 DbSet을 추가한 뒤 마이그레이션을 생성하고 적용합니다.
-현재 엔티티가 없는 상태에서는 실행할 필요가 없습니다. `dotnet tool restore`로 로컬 EF 도구를 준비합니다.
+현재 엔티티가 없는 상태에서는 실행할 필요가 없습니다.
 다음 명령은 `api-server` 폴더에서 첫 마이그레이션을 추가하는 예시입니다. 이후에는 변경 내용을 나타내는 이름을 사용합니다.
 적용 전에 대상 연결 문자열과 생성된 마이그레이션을 확인합니다.
 
 ```powershell
+dotnet tool restore
 dotnet ef migrations add InitialCreate --project src/Zpd.Api --output-dir Data/Migrations
 dotnet ef database update --project src/Zpd.Api
 ```
