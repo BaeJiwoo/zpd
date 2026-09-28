@@ -35,7 +35,10 @@ C++ 의존성은 `socket-server/vcpkg.json`의 baseline으로 고정합니다.
 ## 생성
 
 루트에서 `./tools/Build.ps1 -Target Socket` 실행 후 `./tools/Generate-Protocol.ps1`을 실행합니다.
-C++ 본문 코드는 CMake 빌드 폴더로 생성되어 Git에서 제외됩니다.
-Unity C# 본문과 코드 상수, C++ 코드 상수는 체크인하며 `-Check`가 재생성 결과와 비교합니다.
+C++ 본문 코드는 `socket-server/common/CMakeLists.txt`에 등록된 스키마에서 빌드 폴더로 생성되며 Git에서 제외됩니다.
+Unity C# 본문은 `codegen.json`의 `csharpSchemas`에 지정한 스키마만 생성합니다. 현재는 `matchmaking.proto` 하나입니다.
+스키마 파일을 추가하면 CMake의 대상 목록과 Unity에서 사용할 생성 대상도 함께 확인합니다.
+Unity C# 본문과 양쪽 언어의 메시지·오류 코드 상수는 체크인하며 `-Check`가 재생성 결과와 비교합니다.
+헤더 크기·프레임 한도와 접속 기본값은 아직 언어별 코드에 있습니다. 생성 검사가 이 값들의 일치까지 보장하지는 않습니다.
 체크인된 Google.Protobuf.dll은 원래 런타임을 유지하고 해시로 검증합니다.
 업그레이드할 때 vcpkg baseline, codegen 설정, 런타임과 NOTICE를 함께 검토합니다.

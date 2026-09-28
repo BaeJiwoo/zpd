@@ -1,12 +1,18 @@
 # 로비·소셜·전투 보상 API 구현 명세 초안
 
-작성일: 2026-09-22. 대상: 현재 zpd-client와 향후 게임/API 서버 구현.
+작성일: 2026-09-22. 코드·문서 대조일: 2026-09-28. 대상: `client`와 향후 소켓/API 서버 구현.
 이 문서는 구현 계약 **제안**이다. 확정 요구사항과 미결정을 아래에서 구분한다.
-서버 HTTP 라우트와 인증은 아직 구현되지 않았다. 솔로 디펜스에는 아래 10절의
+아래 로비·소셜·게임 결과·보상 HTTP 라우트와 인증은 아직 구현되지 않았다.
+현재 API의 컨트롤러 라우트는 DB 연결 확인용 `GET /api/connection`뿐이다. 솔로 디펜스에는 아래 10절의
 프로토타입 DTO와 실제 HTTP 요청/실패 처리가 추가되어 있다.
 
 관련 문서: [클라이언트 작업 목록](../../client/Docs/CLIENT_TASKS.md),
 [현재 로비 바인딩 설명](../../client/Assets/Scripts/Lobby/API_INTEGRATION.md).
+
+시스템 배치는 [루트 README](../../README.md#시스템-배치)를 기준으로 한다.
+API 서버와 소켓 서버가 각각 MySQL에 연결하는 것이 목표다.
+아래 내부 정산 API는 후보 방식이며, 실제 저장 주체와 서버 간 전달 방식은 구현 전에 정한다.
+아래에서 설명하는 서버의 검증·저장·중복 방지는 구현할 동작이며, 현재 서버가 보장하는 기능이 아니다.
 
 ## 1. 확정된 요구사항
 
@@ -52,6 +58,9 @@ TCP 프레임은 헤더 8바이트, 본문 최대 4088바이트다. 신규 Proto
 ### 3.2 응답·페이징·버전
 
 공통 성공 envelope 제안:
+
+현재 연결 확인 API는 이 구조를 사용하지 않는다. 성공 시 `status`와 `database`를 직접 반환하고,
+연결 실패 시 `ProblemDetails`를 반환한다. 아래 공통 형식은 도입 여부를 정한 뒤 구현한다.
 
 ```json
 {
@@ -335,7 +344,7 @@ items는 참여 ID·정산 ID·status·시각의 요약이고 개별 결과는 �
 `POST /api/v1/me/game-results`, 멱등 키 `{runId}:game-result`.
 이 API는 분석용 플레이 로그 저장이며 경험치 정산과 별도다.
 
-본문은 `Assets/Scripts/Gameplay/GameSessionTracker.cs`의 `GameRunSnapshot`이다.
+본문은 [GameSessionTracker.cs](../../client/Assets/Scripts/Gameplay/GameSessionTracker.cs)의 `GameRunSnapshot`이다.
 
 | 필드 | 의미 |
 | --- | --- |

@@ -1,5 +1,8 @@
 # 개발 규칙
 
+작업 종류별 방법은 [작업 가이드](docs/guides/README.md)를 참고합니다.
+새 기능은 [공통 작업 순서](docs/guides/FEATURE_WORKFLOW.md)로 정리하고, API 추가는 [라우팅 가이드](docs/guides/API_ROUTING.md)를 따릅니다.
+
 ## 브랜치와 변경
 
 - `main`: 빌드·기본 검증을 통과한 통합 기준.
@@ -10,14 +13,20 @@
 
 ## 검증
 
-루트에서 `./tools/Build.ps1`, `./tools/Test.ps1`을 실행합니다.
-각 명령의 `-Target`으로 프로젝트별 검증도 가능합니다. 계약 변경은 송수신 양쪽을 검증합니다.
+코드 변경은 루트에서 `./tools/Build.ps1`, `./tools/Test.ps1` 순으로 검증합니다.
+두 명령에는 Unity 빌드·플레이 검증이 포함되지 않습니다. 각 명령의 `-Target`으로 변경 영역을 좁힐 수 있습니다.
+`Test.ps1 -Target Contracts`는 TCP 생성 결과만 확인하고, HTTP 명세는 `-Target Api`에 포함됩니다.
+계약 변경은 송수신 양쪽을 검증합니다. 문서만 바꾼 경우에는 코드·명령과 대조하고 링크와 diff를 확인합니다.
 Unity 씬·스크립트 변경에는 `./tools/Test-Unity.ps1`을 실행하고 필요한 Play 검증을 기록합니다.
 이 검사는 컴파일과 누락 스크립트를 확인하며 게임 플레이 검증 전체를 대신하지 않습니다.
 기존 솔로 게임 검증은 `client/Tools/DefenseValidation/Run.ps1`을 사용할 수 있습니다.
+이 스크립트는 Unity 프로세스를 시작한 뒤 바로 반환합니다. 출력된 PID나 스크립트 종료만으로 통과를 판단하지 않고,
+`client/Temp/SoloDefenseValidation/validation-result.txt`의 `PASS` 또는 `FAIL`과 로그를 확인합니다.
+패키지 재사용을 위해 먼저 원본 Unity 프로젝트를 열어 `Library/PackageCache`를 준비합니다.
 
-현재 GitHub CI는 두 서버와 C# 네트워킹·계약 검증을 매 PR마다 실행합니다.
-필수 체크는 최종 `CI`로 지정합니다. Unity 라이선스·에디터가 있는 CI 실행 환경은 별도로 구성해야 합니다.
+GitHub 워크플로는 두 서버와 C# 네트워킹·계약 검증을 매 PR과 `main` 푸시에서 실행하도록 설정돼 있습니다.
+원격 CI 실행은 아직 확인하지 않았습니다. 브랜치 보호를 설정할 때 필수 체크를 최종 `CI`로 지정합니다.
+Unity 라이선스·에디터가 있는 CI 실행 환경은 별도로 구성해야 합니다.
 
 ## Unity와 바이너리
 

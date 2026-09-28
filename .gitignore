@@ -14,3 +14,23 @@
 .env
 .env.*
 !.env.example
+
+# Local API configuration and signing credentials
+appsettings.[Ll]ocal.json
+appsettings.*.[Ll]ocal.json
+secrets.json
+.ssh/
+*.pem
+*.key
+*.pfx
+*.p12
+*.keystore
+*.jks
+
+# Test output and operating-system metadata
+[Tt]est[Rr]esults/
+*.coverage
+*.coveragexml
+.DS_Store
+Thumbs.db
+Desktop.ini

@@ -9,6 +9,7 @@ Unity와 공유하는 통신 원본은 [contracts/realtime](../../contracts/real
 - `include/NetworkSettings.hpp`: C++ 실행 프로그램의 기본 포트·큐 설정.
 - `src/ConsoleExit.cpp`: 개발용 콘솔 종료 처리.
 
-CMake가 공통 `.proto`에서 C++ 코드를 빌드 디렉터리에 생성합니다.
-루트의 `tools/Generate-Protocol.ps1`은 같은 원본에서 Unity 메시지와 양쪽 코드 상수를 생성합니다.
+CMake가 등록된 공통 `.proto`에서 C++ 코드를 빌드 디렉터리에 생성합니다.
+루트의 `tools/Generate-Protocol.ps1`은 `codegen.json`의 생성 대상에서 Unity 메시지를,
+`codes.json`에서 양쪽 언어의 메시지·오류 코드 상수를 생성합니다. 현재 Unity 메시지 생성 대상은 `matchmaking.proto`뿐입니다.
 루트의 `tools/Test.ps1`로 두 언어의 실제 통신과 생성 결과를 검증합니다.

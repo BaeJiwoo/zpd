@@ -1,5 +1,9 @@
 # SoloDefense 플레이 검토 및 개선 제안
 
+이 문서는 2026-09-24 검토 당시의 구현과 이후 개선 과정을 보존한 기록이다.
+본문의 '현재'는 당시 시점을 가리킨다. 무기 구매·교체와 시간 기반 강화는 이후 카드 성장·웨이브 기반 강화로 바뀌었다.
+현재 실행법과 규칙은 [솔로 디펜스 README](../Assets/Scripts/Defense/README.md)를 기준으로 한다.
+
 검토일: 2026-09-24. `SoloDefense.unity`의 직렬화 설정, `DefenseGame`, `DefenseSupplies`, `DefenseSceneBuilder`, `DefenseCameraFit`, 기록 코드를 정적으로 검토했다. Unity Play 모드에서 직접 조작한 결과는 아니다. 아래 체감 문제는 코드로부터 도출한 가설이며 제안 수치는 플레이테스트 시작값이다.
 
 ## 목표 경험

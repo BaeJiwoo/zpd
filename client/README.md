@@ -1,6 +1,7 @@
 # zpd-client
 
-Unity 6000.3.11f1 TCP 클라이언트와 FIFO 매칭 예제입니다.
+Unity 6000.3.11f1 게임 클라입니다. 솔로 디펜스, 로비 UI, TCP FIFO 매칭 테스트가 있습니다.
+로비에서 매칭이나 솔로 씬으로 진입하는 연결은 아직 없습니다.
 
 ## API 구현 문서
 
@@ -24,12 +25,12 @@ Unity 6000.3.11f1 TCP 클라이언트와 FIFO 매칭 예제입니다.
 
 ## 실행
 
-1. 업데이트된 `../socket-server/out/build/windows-x64/Debug/zpd-server.exe`를 실행합니다. 이전 서버가 실행 중이면 종료 후 새로 실행합니다.
-2. Unity에서 `Assets/Scenes/ConnectionTest.unity`를 열고 Play → Connect를 누릅니다.
+1. 루트에서 `./tools/Build.ps1 -Target Socket`으로 빌드한 뒤 `./tools/Run.ps1 -Target Socket`으로 실행합니다. 기본 포트는 `30000`입니다.
+2. Unity에서 `Assets/Scenes/ConnectionTest.unity`를 열고 Play → Port를 `30000`으로 변경 → Connect를 누릅니다.
 3. 연결 후 자동으로 매칭 요청을 보내고 Waiting 상태로 대기합니다.
 4. 다른 클라이언트에서도 Connect를 누릅니다. 먼저 대기한 2명이 같은 Session ID와 참가자 목록을 받습니다.
 
-두 클라이언트는 Unity Editor와 Standalone 빌드를 함께 실행하면 됩니다. 주소와 초기 포트는 ConnectionTest Inspector에서 설정합니다. 실행 중에는 화면의 Port 입력창에서 1~65535 범위의 포트를 입력한 뒤 Connect를 누릅니다. 연결 중에는 포트를 변경할 수 없으며 Disconnect 후 변경할 수 있습니다. 서버가 실제로 사용하는 포트와 같아야 합니다. 서로 다른 PC라면 같은 서버 IP를 사용합니다. 기본값은 `127.0.0.1:20000`입니다. WebGL은 지원하지 않습니다.
+두 클라이언트는 Unity Editor와 ConnectionTest 씬을 포함한 Standalone 빌드를 함께 실행하면 됩니다. 주소와 초기 포트는 ConnectionTest Inspector에서 설정합니다. 실행 중에는 화면의 Port 입력창에서 1~65535 범위의 포트를 입력한 뒤 Connect를 누릅니다. 연결 중에는 포트를 변경할 수 없으며 Disconnect 후 변경할 수 있습니다. 서로 다른 PC라면 같은 서버 IP를 사용합니다. 클라 초기값은 `127.0.0.1:20000`으로 서버 기본값 `30000`과 다르므로 위 순서에서 포트를 맞춥니다. WebGL은 지원하지 않습니다.
 
 ## 매칭
 
@@ -41,7 +42,7 @@ Unity 6000.3.11f1 TCP 클라이언트와 FIFO 매칭 예제입니다.
 - 세션은 참가자가 모두 나가면 삭제됩니다. 빈 자리를 자동으로 채우거나 남은 참가자를 자동 재매칭하지 않습니다.
 - 세션 ID와 플레이어 ID는 서버 실행 동안만 유효합니다. 인증이나 세션 복구 기능은 없습니다.
 
-매칭 인원은 서버 `server/include/ServerLimits.hpp`의 `PlayersPerSession`으로 설정합니다. 현재는 2명이며 2~16명 범위로 바꾸고 서버를 다시 빌드합니다. 매칭 정책은 `server/src/PacketHandler.Matchmaking.cpp`의 `TryMatchPlayers`에서 변경합니다.
+매칭 인원은 [ServerLimits.hpp](../socket-server/server/include/ServerLimits.hpp)의 `PlayersPerSession`으로 설정합니다. 현재는 2명이며 2~16명 범위로 바꾸고 서버를 다시 빌드합니다. 매칭 정책은 [PacketHandler.Matchmaking.cpp](../socket-server/server/src/PacketHandler.Matchmaking.cpp)의 `TryMatchPlayers`에서 변경합니다.
 
 ## 코드 구조
 
@@ -84,13 +85,13 @@ ctest --test-dir out/build/windows-x64 -C Debug -R server-integration --output-o
 dotnet run --project Tools/Verification -- ../socket-server/out/build/windows-x64/Debug/zpd-server.exe
 ```
 
-실제 서버에 여러 클라이언트를 연결해 FIFO 매칭, 세션 분리, 취소, 퇴장, 재매칭, 연결 종료 정리, 잘못된 요청을 검증합니다. 기존 에코/프레이밍 테스트도 유지합니다. Unity 참조 기반 컴파일을 확인했으며, Unity Play 화면을 직접 조작한 검증은 별도입니다.
+실제 서버에 여러 클라이언트를 연결해 FIFO 매칭, 세션 분리, 취소, 퇴장, 재매칭, 연결 종료 정리, 잘못된 요청을 검증합니다. 기존 에코/프레이밍 테스트도 유지합니다. 테스트는 임시 포트를 지정하므로 기본 포트의 일치까지 검사하지 않습니다. Unity 컴파일·씬 검사 기록은 [이전 검증 결과](../docs/VALIDATION.md)를 참고하고, 매칭 화면의 직접 조작은 별도로 확인합니다.
 
 프로토콜을 바꾼 뒤에는 `Tools/Generate-Protocol.ps1`로 C# 메시지를 갱신합니다.
 
 ## 솔로 디펜스
 
-`Assets/Scenes/SoloDefense.unity`를 열고 Play → START DEFENSE.
+`Assets/Scenes/SoloDefense.unity`를 열고 Play → 전투 시작.
 WASD/방향키 이동, 마우스 조준·왼쪽 버튼 사격, Space 대시, Esc 일시정지.
 웨이브 종료마다 1/2/3으로 무료 카드 1장을 골라 발사체 수·피해·발사 속도를 누적 강화합니다.
 선택 전에는 준비 시간이 멈추고, 선택 후 8초간 준비 시간이 흐릅니다.
@@ -101,6 +102,6 @@ WASD/방향키 이동, 마우스 조준·왼쪽 버튼 사격, Space 대시, Esc
 
 게임 모드는 `dedicated_battle`과 `solo_defense`이며 공통 싱글톤이 플레이 정보를 추적합니다.
 현재 새로 구현한 플레이는 솔로 디펜스입니다. 종료 시 게임 로그 저장과 보상을 실제 API로 요청하고,
-서버가 없는 상태에서는 각각 실패 화면을 표시합니다. 상세 실행법과 데이터 계약은
+서버가 없거나 응답이 실패하면 각각 실패를 표시합니다. 현재 API 서버에도 해당 라우트가 없어 로컬 API 실행 중에는 HTTP 404로 실패합니다. 상세 실행법과 데이터 계약은
 [Defense README](Assets/Scripts/Defense/README.md), [API 명세](../docs/design/API_IMPLEMENTATION.md),
 [남은 클라이언트 작업](Docs/CLIENT_TASKS.md)을 참고하세요.
