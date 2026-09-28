@@ -1,0 +1,88 @@
+{
+  "openapi": "3.1.1",
+  "info": {
+    "title": "Zpd.Api | v1",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/connection": {
+      "get": {
+        "tags": [
+          "Connection"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "title": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "status": {
+            "pattern": "^-?(?:0|[1-9]\\d*)$",
+            "type": [
+              "null",
+              "integer",
+              "string"
+            ],
+            "format": "int32"
+          },
+          "detail": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "instance": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Connection"
+    }
+  ]
+}

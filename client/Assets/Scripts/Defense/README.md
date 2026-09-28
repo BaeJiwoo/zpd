@@ -144,7 +144,7 @@
 ## 실제 API 요청과 실패 UI
 
 씬의 `Solo Defense` 오브젝트 → `DefenseRewardClient.apiBaseUrl`을 설정한다.
-기본값은 서비스가 없는 `https://127.0.0.1:18080`이다. 현재 인증 토큰은 붙이지 않는다.
+개발 기본 주소는 `http://localhost:5089`이다. 현재 API 서버에 게임 로그·보상 라우트는 없어 HTTP 404가 정상적인 미구현 응답이다. HTTP는 Unity Editor와 Development Build에서만 허용하며 배포 빌드에는 HTTPS 주소를 지정한다. 현재 인증 토큰은 붙이지 않는다.
 5초 타임아웃의 실제 HTTP 요청을 보내므로 서버가 없으면 실패 화면이 표시된다.
 임의 성공이나 로컬 경험치 지급은 하지 않는다.
 
@@ -175,6 +175,6 @@
 운영 솔로 보상에는 서버 발급 세션/검증 정책이 필요하다. 데디케이티드 전투는 전투 서버의
 사망·킬 확정 결과로 정산한다. UI에 표시된 성공도 현재는 로컬 프로필을 수정하지 않는다.
 
-전체 계약과 후속 작업은 `Docs/API_IMPLEMENTATION.md`, `Docs/CLIENT_TASKS.md` 참조.
+전체 계약과 후속 작업은 [API 설계 초안](../../../../docs/design/API_IMPLEMENTATION.md), [클라이언트 작업](../../../Docs/CLIENT_TASKS.md) 참조.
 리소스는 기존 Rgsdev CC0 캐릭터/적/무기와 프로젝트 UI를 재사용한다.
 CC0 포함 모든 출처는 `Assets/ThirdParty/CREDITS.md`에 기록되어 있다.

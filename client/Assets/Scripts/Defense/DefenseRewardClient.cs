@@ -21,8 +21,8 @@ namespace Zpd.Defense
     /// <summary>Real HTTP prototype request. Local run statistics are untrusted, not proof of rewards.</summary>
     public sealed class DefenseRewardClient : MonoBehaviour
     {
-        [Tooltip("Prototype endpoint. Default intentionally points to an unimplemented local service.")]
-        public string apiBaseUrl = "https://127.0.0.1:18080";
+        [Tooltip("Development API address. Game-result and reward routes are not implemented yet.")]
+        public string apiBaseUrl = "http://localhost:5089";
         [Range(1, 30)] public int timeoutSeconds = 5;
         public Text title;
         public Text detail;

@@ -8,7 +8,7 @@ ASP.NET Core 10 + EF Core 10 + MySQL 기반의 빈 API 프로젝트입니다.
 - .NET 10 SDK
 - 실행 중인 MySQL 서버와 미리 생성된 `zpd` 데이터베이스 및 접근 계정
 
-저장소 루트에서 실행합니다.
+아래 명령은 모노레포의 `api-server` 폴더에서 실행합니다. 전체 빌드·검증은 [루트 README](../README.md)를 참고하세요.
 
 ```powershell
 dotnet restore
@@ -24,7 +24,7 @@ dotnet run --project src/Zpd.Api --launch-profile http
 
 ## VS Code 개발
 
-저장소 루트에서 `code .`로 폴더를 엽니다.
+`api-server`에서 `code .`를 실행하거나 루트의 `zpd.code-workspace`를 엽니다.
 권장 확장인 **C# Dev Kit**과 **REST Client**를 설치합니다.
 위의 User Secrets 설정을 먼저 완료한 뒤 다음 단축키를 사용합니다.
 

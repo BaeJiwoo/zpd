@@ -1,7 +1,7 @@
 # API 연결을 위한 클라이언트 작업 목록
 
 작성일: 2026-09-22. `[ ]` 항목은 **미구현 작업**이다. 이 문서 작성으로 구현 완료를 의미하지 않는다.
-API 계약은 [API_IMPLEMENTATION.md](API_IMPLEMENTATION.md), 현재 연결 지점은
+API 계약은 [API_IMPLEMENTATION.md](../../docs/design/API_IMPLEMENTATION.md), 현재 연결 지점은
 [API_INTEGRATION.md](../Assets/Scripts/Lobby/API_INTEGRATION.md)를 참고한다.
 
 ## 현재 상태

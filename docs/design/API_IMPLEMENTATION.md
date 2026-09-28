@@ -5,8 +5,8 @@
 서버 HTTP 라우트와 인증은 아직 구현되지 않았다. 솔로 디펜스에는 아래 10절의
 프로토타입 DTO와 실제 HTTP 요청/실패 처리가 추가되어 있다.
 
-관련 문서: [클라이언트 작업 목록](CLIENT_TASKS.md),
-[현재 로비 바인딩 설명](../Assets/Scripts/Lobby/API_INTEGRATION.md).
+관련 문서: [클라이언트 작업 목록](../../client/Docs/CLIENT_TASKS.md),
+[현재 로비 바인딩 설명](../../client/Assets/Scripts/Lobby/API_INTEGRATION.md).
 
 ## 1. 확정된 요구사항
 
@@ -383,7 +383,7 @@ items는 참여 ID·정산 ID·status·시각의 요약이고 개별 결과는 �
 
 응답은 `status=settled`, 동일 `runId`, 비어 있지 않은 `settlementId`,
 0 이상의 정수 `earnedExperience`가 필요하다. 클라이언트는 표시만 하며 프로필을 수정하지 않는다.
-서버가 없는 기본 주소는 `https://127.0.0.1:18080`, 요청 타임아웃은 5초다.
+개발 기본 주소는 `http://localhost:5089`, 요청 타임아웃은 5초다. API 서버에 게임 결과·보상 라우트는 아직 없어 실행 중인 API에서도 해당 요청은 404로 실패한다.
 서버 부재/HTTP 오류/미확정 응답은 실패로 표시하며 경험치를 임의 지급하지 않는다.
 
 이 경로는 개발용 제안이다. 클라이언트 킬 수를 그대로 신뢰하는 운영 보상 API로 배포하면 안 된다.

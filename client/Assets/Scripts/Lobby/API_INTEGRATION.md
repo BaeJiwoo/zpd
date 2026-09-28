@@ -1,7 +1,7 @@
 # 로비 API 연결 지점
 
 이 문서는 **현재 로그 전용 UI 코드의 연결 지점**을 설명합니다.
-전체 서버 계약 제안은 [API 구현 명세](../../../Docs/API_IMPLEMENTATION.md),
+전체 서버 계약 제안은 [API 구현 명세](../../../../docs/design/API_IMPLEMENTATION.md),
 진행할 작업은 [클라이언트 작업 목록](../../../Docs/CLIENT_TASKS.md)을 참고하세요.
 권장 일괄 `POST /me/hearts/sync`를 채택하면 아래 개별 하트 로그 경로를 실제 전송으로
 연결하지 않고 sync 결과 바인딩으로 교체해야 합니다.

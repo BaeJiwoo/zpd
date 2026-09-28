@@ -4,10 +4,10 @@ Unity 6000.3.11f1 TCP 클라이언트와 FIFO 매칭 예제입니다.
 
 ## API 구현 문서
 
-- [API 구현 명세 초안](Docs/API_IMPLEMENTATION.md): 로비·소셜·자동 하트·캐릭터·장비 라우트, 기존 TCP 매칭 연결, 사망 시 킬 수 기반 경험치 정산 및 미결정 정책.
+- [API 구현 명세 초안](../docs/design/API_IMPLEMENTATION.md): 로비·소셜·자동 하트·캐릭터·장비 라우트, 기존 TCP 매칭 연결, 사망 시 킬 수 기반 경험치 정산 및 미결정 정책.
 - [클라이언트 작업 목록](Docs/CLIENT_TASKS.md): 현재 코드 기준의 미구현 작업, 우선순위, 수정 위치와 완료 기준.
 
-HTTP API와 신규 전투/정산 이벤트는 제안 단계이며 아직 구현되지 않았습니다.
+로비·보상 HTTP API와 신규 전투/정산 이벤트는 제안 단계입니다. API 서버에는 DB 연결 확인 API만 구현되어 있습니다.
 
 ## 로비
 
@@ -24,7 +24,7 @@ HTTP API와 신규 전투/정산 이벤트는 제안 단계이며 아직 구현�
 
 ## 실행
 
-1. 업데이트된 `../zpd-server/out/build/windows-x64/Debug/zpd-server.exe`를 실행합니다. 이전 서버가 실행 중이면 종료 후 새로 실행합니다.
+1. 업데이트된 `../socket-server/out/build/windows-x64/Debug/zpd-server.exe`를 실행합니다. 이전 서버가 실행 중이면 종료 후 새로 실행합니다.
 2. Unity에서 `Assets/Scenes/ConnectionTest.unity`를 열고 Play → Connect를 누릅니다.
 3. 연결 후 자동으로 매칭 요청을 보내고 Waiting 상태로 대기합니다.
 4. 다른 클라이언트에서도 Connect를 누릅니다. 먼저 대기한 2명이 같은 Session ID와 참가자 목록을 받습니다.
@@ -55,7 +55,7 @@ HTTP API와 신규 전투/정산 이벤트는 제안 단계이며 아직 구현�
 
 ## 프로토콜
 
-8바이트 big-endian 헤더와 최대 4088바이트 본문을 유지합니다. 매칭 본문은 서버 `common/proto/matchmaking.proto`가 원본입니다.
+8바이트 big-endian 헤더와 최대 4088바이트 본문을 유지합니다. 매칭 본문은 공통 `../contracts/realtime/proto/matchmaking.proto`가 원본입니다.
 
 | 요청 | 응답 | 용도 |
 |---|---|---|
@@ -81,7 +81,7 @@ ctest --test-dir out/build/windows-x64 -C Debug -R server-integration --output-o
 클라이언트 루트에서:
 
 ```powershell
-dotnet run --project Tools/Verification -- ../zpd-server/out/build/windows-x64/Debug/zpd-server.exe
+dotnet run --project Tools/Verification -- ../socket-server/out/build/windows-x64/Debug/zpd-server.exe
 ```
 
 실제 서버에 여러 클라이언트를 연결해 FIFO 매칭, 세션 분리, 취소, 퇴장, 재매칭, 연결 종료 정리, 잘못된 요청을 검증합니다. 기존 에코/프레이밍 테스트도 유지합니다. Unity 참조 기반 컴파일을 확인했으며, Unity Play 화면을 직접 조작한 검증은 별도입니다.
@@ -102,5 +102,5 @@ WASD/방향키 이동, 마우스 조준·왼쪽 버튼 사격, Space 대시, Esc
 게임 모드는 `dedicated_battle`과 `solo_defense`이며 공통 싱글톤이 플레이 정보를 추적합니다.
 현재 새로 구현한 플레이는 솔로 디펜스입니다. 종료 시 게임 로그 저장과 보상을 실제 API로 요청하고,
 서버가 없는 상태에서는 각각 실패 화면을 표시합니다. 상세 실행법과 데이터 계약은
-[Defense README](Assets/Scripts/Defense/README.md), [API 명세](Docs/API_IMPLEMENTATION.md),
+[Defense README](Assets/Scripts/Defense/README.md), [API 명세](../docs/design/API_IMPLEMENTATION.md),
 [남은 클라이언트 작업](Docs/CLIENT_TASKS.md)을 참고하세요.

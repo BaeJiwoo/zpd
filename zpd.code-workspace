@@ -1,0 +1,8 @@
+{
+  "folders": [
+    { "name": "ZPD", "path": "." },
+    { "name": "Client", "path": "client" },
+    { "name": "Socket Server", "path": "socket-server" },
+    { "name": "API Server", "path": "api-server" }
+  ]
+}

@@ -4272,7 +4272,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cee7493f17a2dbb4bae33263b4e4823b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Zpd.Defense.DefenseRewardClient
-  apiBaseUrl: https://127.0.0.1:18080
+  apiBaseUrl: http://localhost:5089
   timeoutSeconds: 5
   title: {fileID: 913911282}
   detail: {fileID: 483461561}

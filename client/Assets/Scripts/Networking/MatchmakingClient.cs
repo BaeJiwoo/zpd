@@ -15,18 +15,6 @@ namespace Zpd.Networking
         InSession
     }
 
-    public static class MatchMessageCode
-    {
-        public const byte MatchRequest = 16;
-        public const byte CancelMatchRequest = 17;
-        public const byte LeaveSessionRequest = 18;
-        public const byte MatchResponse = 144;
-        public const byte CancelMatchResponse = 145;
-        public const byte LeaveSessionResponse = 146;
-        public const byte MatchFound = 208;
-        public const byte SessionPlayerLeft = 209;
-    }
-
     public sealed class MatchmakingClient
     {
         private readonly NetworkClient m_client;
@@ -68,7 +56,7 @@ namespace Zpd.Networking
         {
             if (State != MatchState.Ready)
                 throw new InvalidOperationException("Leave the current session before requesting a match.");
-            SendRequest(MatchMessageCode.MatchRequest, MatchMessageCode.MatchResponse, new MatchRequest());
+            SendRequest(MessageCode.MatchRequest, MessageCode.MatchResponse, new MatchRequest());
             MessageReceived?.Invoke("Match requested.");
         }
 
@@ -76,7 +64,7 @@ namespace Zpd.Networking
         {
             if (State != MatchState.Waiting)
                 throw new InvalidOperationException("There is no waiting match to cancel.");
-            SendRequest(MatchMessageCode.CancelMatchRequest, MatchMessageCode.CancelMatchResponse,
+            SendRequest(MessageCode.CancelMatchRequest, MessageCode.CancelMatchResponse,
                 new CancelMatchRequest());
         }
 
@@ -84,7 +72,7 @@ namespace Zpd.Networking
         {
             if (State != MatchState.InSession)
                 throw new InvalidOperationException("There is no session to leave.");
-            SendRequest(MatchMessageCode.LeaveSessionRequest, MatchMessageCode.LeaveSessionResponse,
+            SendRequest(MessageCode.LeaveSessionRequest, MessageCode.LeaveSessionResponse,
                 new LeaveSessionRequest());
         }
 
@@ -104,7 +92,7 @@ namespace Zpd.Networking
                 return false;
             try
             {
-                if (packet.Code == MatchMessageCode.MatchFound || packet.Code == MatchMessageCode.SessionPlayerLeft)
+                if (packet.Code == MessageCode.MatchFound || packet.Code == MessageCode.SessionPlayerLeft)
                 {
                     if (packet.RequestId != 0 || packet.Error != 0)
                         throw new InvalidDataException("Invalid match notification header.");
@@ -124,7 +112,7 @@ namespace Zpd.Networking
                 }
                 switch (packet.Code)
                 {
-                    case MatchMessageCode.MatchResponse:
+                    case MessageCode.MatchResponse:
                         var entered = MatchResponse.Parser.ParseFrom(packet.Payload);
                         if (entered.PlayerId == 0)
                             throw new InvalidDataException("Invalid player ID.");
@@ -132,12 +120,12 @@ namespace Zpd.Networking
                         State = MatchState.Waiting;
                         MessageReceived?.Invoke("Waiting for other players. Player " + PlayerId);
                         break;
-                    case MatchMessageCode.CancelMatchResponse:
+                    case MessageCode.CancelMatchResponse:
                         CancelMatchResponse.Parser.ParseFrom(packet.Payload);
                         State = MatchState.Ready;
                         MessageReceived?.Invoke("Match cancelled.");
                         break;
-                    case MatchMessageCode.LeaveSessionResponse:
+                    case MessageCode.LeaveSessionResponse:
                         var left = LeaveSessionResponse.Parser.ParseFrom(packet.Payload);
                         if (left.SessionId != SessionId || SessionId == 0)
                             throw new InvalidDataException("Unexpected session leave response.");
@@ -159,15 +147,15 @@ namespace Zpd.Networking
 
         public static bool IsMatchPacket(byte code)
         {
-            return code == MatchMessageCode.MatchRequest || code == MatchMessageCode.CancelMatchRequest
-                || code == MatchMessageCode.LeaveSessionRequest || code == MatchMessageCode.MatchResponse
-                || code == MatchMessageCode.CancelMatchResponse || code == MatchMessageCode.LeaveSessionResponse
-                || code == MatchMessageCode.MatchFound || code == MatchMessageCode.SessionPlayerLeft;
+            return code == MessageCode.MatchRequest || code == MessageCode.CancelMatchRequest
+                || code == MessageCode.LeaveSessionRequest || code == MessageCode.MatchResponse
+                || code == MessageCode.CancelMatchResponse || code == MessageCode.LeaveSessionResponse
+                || code == MessageCode.MatchFound || code == MessageCode.SessionPlayerLeft;
         }
 
         private void HandleNotification(Packet packet)
         {
-            if (packet.Code == MatchMessageCode.MatchFound)
+            if (packet.Code == MessageCode.MatchFound)
             {
                 var matched = MatchFound.Parser.ParseFrom(packet.Payload);
                 var players = new HashSet<ulong>(matched.PlayerIds);

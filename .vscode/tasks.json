@@ -1,0 +1,21 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "ZPD: Build servers",
+      "type": "shell",
+      "command": "pwsh",
+      "args": ["-NoProfile", "-File", "${workspaceFolder}/tools/Build.ps1"],
+      "group": { "kind": "build", "isDefault": true },
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "ZPD: Test",
+      "type": "shell",
+      "command": "pwsh",
+      "args": ["-NoProfile", "-File", "${workspaceFolder}/tools/Test.ps1"],
+      "dependsOn": "ZPD: Build servers",
+      "problemMatcher": []
+    }
+  ]
+}

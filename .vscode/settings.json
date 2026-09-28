@@ -1,0 +1,6 @@
+{
+    "cmake.sourceDirectory": "${workspaceFolder}/socket-server",
+    "cmake.useCMakePresets": "always",
+    "files.exclude": { "**/.migration-backup": true },
+    "search.exclude": { "**/.migration-backup": true, "**/Library": true, "**/out": true }
+}

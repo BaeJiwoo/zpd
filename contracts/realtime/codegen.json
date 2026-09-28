@@ -1,0 +1,8 @@
+{
+  "protocVersion": "33.4",
+  "csharpRuntimeVersion": "3.35.0.0",
+  "csharpRuntimeSha256": "ddbce96edb42329333ecd061dc5bb09fb96c72298bb429244fc4916d906c4d5f",
+  "csharpSchemas": [
+    "matchmaking.proto"
+  ]
+}
