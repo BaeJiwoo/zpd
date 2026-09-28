@@ -7,7 +7,8 @@ Credits are retained for every external asset, including CC0 assets.
 | Free 2D Animated Vector Game Character Sprites | Raphael Gonçalves (Rgsdev), https://rgsdev.itch.io/ | CC0, as stated in the bundled [original license](Rgsdev/License.txt) | Lobby character previews and portraits; Defense Char 1, Enemy 1/2/4, weapons R1/R2/R3, bullet and crosshair |
 | Cartoon lobby UI atlas | OpenAI image_gen; art direction and integration by Codex for this project | Original AI-generated project artwork; not claimed to be CC0 | Panel, item card, violet and orange buttons, backpack and friends icons |
 | LegacyRuntime font | Unity, built-in engine resource | Provided with Unity; not a downloaded CC0 font | Editable UI text |
-| Noto Sans KR Regular | Google / Adobe Noto CJK project, [official source](https://github.com/notofonts/noto-cjk/tree/Sans2.004) | SIL OFL 1.1, [license and credit](NotoSansKR/CREDITS.md) | All solo-defense UI, Korean help |
+| Noto Sans KR Regular | Google / Adobe Noto CJK project, [official source](https://github.com/notofonts/noto-cjk/tree/Sans2.004) | SIL OFL 1.1, [license and credit](NotoSansKR/CREDITS.md) | Retained for compatibility with earlier UI assets |
+| NEXON Lv.1 Gothic Regular | NEXON / FONTRIX | Bundled [copyright notice and source links](../StreamingAssets/ThirdParty/NexonLv1/NOTICE.txt) | Login, lobby, solo-defense and connection-test UI |
 | Last Signal meadow | OpenAI image_gen; Codex art direction using the Rgsdev character as a style reference | Original AI-generated project background, not claimed to be CC0; [exact prompts](../ArtSource/Defense/IMAGEGEN.md) | Full-bleed evacuation-trail field |
 | Defense arcade sound effects (11 WAVs) | Codex for this project; editor synthesis in `DefenseSoundBuilder.cs` | Original project waveforms, no external recordings or samples | Shot, scatter, hit, kill, pickup, shop, purchase, hurt, defeat, warning, dash |
 

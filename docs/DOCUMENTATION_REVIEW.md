@@ -13,7 +13,7 @@
 | 중간 | API 스모크는 경로 노출과 HTTP 503만 확인한다 | DB 정상 연결과 응답 본문은 검증되지 않는다. 새 API를 추가할 때 성공·실패 본문과 데이터 변경 검증을 연결해야 한다. |
 
 근거: [C++ 기본 포트](../socket-server/common/include/NetworkSettings.hpp),
-[Unity 기본 포트](../client/Assets/Scripts/Networking/NetworkSettings.cs),
+[Unity 기본 포트](../client/Assets/Scripts/Networking/Tcp/NetworkSettings.cs),
 [저장된 매칭 씬](../client/Assets/Scenes/ConnectionTest.unity),
 [실행 스크립트](../tools/Run.ps1),
 [연결 확인 컨트롤러](../api-server/src/Zpd.Api/Controllers/ConnectionController.cs),

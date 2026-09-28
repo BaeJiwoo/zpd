@@ -1,36 +1,39 @@
 # zpd-client
 
-Unity 6000.3.11f1 게임 클라입니다. 솔로 디펜스, 로비 UI, TCP FIFO 매칭 테스트가 있습니다.
-로비에서 매칭이나 솔로 씬으로 진입하는 연결은 아직 없습니다.
+Unity 6000.3.11f1 TCP 클라이언트와 FIFO 매칭 예제입니다.
+
+로비·솔로 디펜스는 Model(상태·규칙), View(화면), Controller(입력·진행)로 분리되어 있습니다.
+[MVC 구조와 씬 이동](Docs/MVC_ARCHITECTURE.md)을 참고하세요.
+빌드는 로그인 화면에서 시작하며, 로그인 후 로비의 **SOLO DEFENSE >** → **전투 시작**으로 플레이합니다.
+디펜스의 준비·일시정지·결과 화면에서 **로비로 돌아가기**를 사용할 수 있습니다.
 
 ## API 구현 문서
 
 - [API 구현 명세 초안](../docs/design/API_IMPLEMENTATION.md): 로비·소셜·자동 하트·캐릭터·장비 라우트, 기존 TCP 매칭 연결, 사망 시 킬 수 기반 경험치 정산 및 미결정 정책.
 - [클라이언트 작업 목록](Docs/CLIENT_TASKS.md): 현재 코드 기준의 미구현 작업, 우선순위, 수정 위치와 완료 기준.
 
-로비·보상 HTTP API와 신규 전투/정산 이벤트는 제안 단계입니다. API 서버에는 DB 연결 확인 API만 구현되어 있습니다.
+클라이언트에는 로그인·프로필·인벤토리·아이템 사용과 결과·보상 요청이 구현되어 있습니다.
+현재 API 서버는 DB 연결 확인만 지원하므로 로그인부터 로비까지 실제 서비스로 이용하려면 해당 서버 API 구현이 필요합니다.
+신규 멀티플레이 전투·정산 이벤트도 아직 구현되지 않았습니다.
 
 ## 로비
 
-`Assets/Scenes/Lobby.unity`를 열어 Play하거나, `ZPD > Lobby > Create Lobby Scene` 메뉴로
-로비 씬을 새로 생성할 수 있습니다. 중앙 캐릭터, 프로필·전적, 친구/검색/최근 접속 유저,
-하단 인벤토리, 전투 입장 및 캐릭터 변경 버튼을 제공합니다. 최근 접속 추천 목록에서는
-친구 요청을 보낼 수 있고 새로고침을 지원합니다. 친구 창에서 가능한 하트는 자동으로
-수령·전송하는 흐름이며, 현재는 API 로그만 출력합니다. 화면은 에디터에서
-생성·저장하며 API 연동 전 데이터는 모두 placeholder입니다. 작업 지점은 로그만 출력하고,
-서버 대상/가능 여부/소유 정보가 없는 동작은 비활성입니다. 영어 UI를 사용합니다.
+`Assets/Scenes/Lobby.unity`가 기본 로비입니다. 프로필·인벤토리·친구 메뉴와 솔로 디펜스 진입을 제공합니다.
+로그인부터 확인하려면 `Assets/Scenes/Login.unity`를 열고 Play하세요. API 인증 설정은 [로그인 계약](Docs/LOGIN.md)을 참고하세요.
+`ZPD > Lobby > Create Lobby Scene`으로 로비를 새로 생성할 수 있습니다.
+`LegacyLobby.unity`는 생성 원본으로 보관하며 빌드에는 포함하지 않습니다.
 
 자세한 사용법은 [로비 가이드](Assets/Scripts/Lobby/README.md),
 외부 리소스와 직접 제작한 UI 원화의 출처는 [크레딧](Assets/ThirdParty/CREDITS.md)을 확인하세요.
 
 ## 실행
 
-1. 루트에서 `./tools/Build.ps1 -Target Socket`으로 빌드한 뒤 `./tools/Run.ps1 -Target Socket`으로 실행합니다. 기본 포트는 `30000`입니다.
+1. 저장소 루트에서 `./tools/Build.ps1 -Target Socket`으로 빌드한 뒤 `./tools/Run.ps1 -Target Socket`으로 실행합니다. 기본 포트는 `30000`입니다.
 2. Unity에서 `Assets/Scenes/ConnectionTest.unity`를 열고 Play → Port를 `30000`으로 변경 → Connect를 누릅니다.
 3. 연결 후 자동으로 매칭 요청을 보내고 Waiting 상태로 대기합니다.
 4. 다른 클라이언트에서도 Connect를 누릅니다. 먼저 대기한 2명이 같은 Session ID와 참가자 목록을 받습니다.
 
-두 클라이언트는 Unity Editor와 ConnectionTest 씬을 포함한 Standalone 빌드를 함께 실행하면 됩니다. 주소와 초기 포트는 ConnectionTest Inspector에서 설정합니다. 실행 중에는 화면의 Port 입력창에서 1~65535 범위의 포트를 입력한 뒤 Connect를 누릅니다. 연결 중에는 포트를 변경할 수 없으며 Disconnect 후 변경할 수 있습니다. 서로 다른 PC라면 같은 서버 IP를 사용합니다. 클라 초기값은 `127.0.0.1:20000`으로 서버 기본값 `30000`과 다르므로 위 순서에서 포트를 맞춥니다. WebGL은 지원하지 않습니다.
+두 클라이언트는 Unity Editor와 ConnectionTest 씬을 실행하는 Standalone 빌드로 검증합니다. 주소와 초기 포트는 ConnectionTest Inspector에서 설정합니다. 실행 중에는 화면의 Port 입력창에서 1~65535 범위의 포트를 입력한 뒤 Connect를 누릅니다. 연결 중에는 포트를 변경할 수 없으며 Disconnect 후 변경할 수 있습니다. 서로 다른 PC라면 같은 서버 IP를 사용합니다. 클라 초기값은 `127.0.0.1:20000`으로 서버 기본값 `30000`과 다르므로 포트를 맞춥니다. WebGL은 지원하지 않습니다.
 
 ## 매칭
 
@@ -46,8 +49,10 @@ Unity 6000.3.11f1 게임 클라입니다. 솔로 디펜스, 로비 UI, TCP FIFO 
 
 ## 코드 구조
 
-- `Assets/Scripts/Networking/NetworkClient.cs`: 비동기 TCP 송수신, 연결별 요청 ID, 이벤트 큐.
-- `Assets/Scripts/Networking/MatchmakingClient.cs`: 매칭 요청/응답, 세션 상태, 참가자 목록.
+HTTP/authentication structure: [Networking architecture](Docs/NETWORKING.md).
+
+- `Assets/Scripts/Networking/Tcp/NetworkClient.cs`: 비동기 TCP 송수신, 연결별 요청 ID, 이벤트 큐.
+- `Assets/Scripts/Networking/Tcp/MatchmakingClient.cs`: 매칭 요청/응답, 세션 상태, 참가자 목록.
 - `Assets/Scripts/Development/PacketHandler.cs`: HandleConnected, HandlePacketReceived, HandleDisconnected.
 - `Assets/Scripts/Development/ConnectionTest.cs`: 큰 글씨의 테스트 UI와 메인 스레드 이벤트 처리.
 - 서버 `PacketHandler.cpp`: 연결 및 메시지 분기. 매칭 처리는 `PacketHandler.Matchmaking.cpp`로 분리합니다.
@@ -56,7 +61,7 @@ Unity 6000.3.11f1 게임 클라입니다. 솔로 디펜스, 로비 UI, TCP FIFO 
 
 ## 프로토콜
 
-8바이트 big-endian 헤더와 최대 4088바이트 본문을 유지합니다. 매칭 본문은 공통 `../contracts/realtime/proto/matchmaking.proto`가 원본입니다.
+8바이트 big-endian 헤더와 최대 4088바이트 본문을 유지합니다. 매칭 본문은 공통 `../contracts/realtime/proto/matchmaking.proto`가 원본입니다. 메시지·오류 번호는 `../contracts/realtime/codes.json`에서 생성합니다.
 
 | 요청 | 응답 | 용도 |
 |---|---|---|
@@ -72,26 +77,23 @@ Unity 6000.3.11f1 게임 클라입니다. 솔로 디펜스, 로비 UI, TCP FIFO 
 
 ## 빌드와 검증
 
-서버 루트에서:
+저장소 루트에서:
 
 ```powershell
-cmake --build out/build/windows-x64 --config Debug --target zpd-server zpd-server-tests -- /p:VcpkgEnabled=false
-ctest --test-dir out/build/windows-x64 -C Debug -R server-integration --output-on-failure
+./tools/Build.ps1 -Target Socket
+./tools/Test.ps1 -Target Networking
+./tools/Test.ps1 -Target Contracts
+./tools/Test-Unity.ps1 -Gameplay
 ```
 
-클라이언트 루트에서:
-
-```powershell
-dotnet run --project Tools/Verification -- ../socket-server/out/build/windows-x64/Debug/zpd-server.exe
-```
-
-실제 서버에 여러 클라이언트를 연결해 FIFO 매칭, 세션 분리, 취소, 퇴장, 재매칭, 연결 종료 정리, 잘못된 요청을 검증합니다. 기존 에코/프레이밍 테스트도 유지합니다. 테스트는 임시 포트를 지정하므로 기본 포트의 일치까지 검사하지 않습니다. Unity 컴파일·씬 검사 기록은 [이전 검증 결과](../docs/VALIDATION.md)를 참고하고, 매칭 화면의 직접 조작은 별도로 확인합니다.
+실제 서버에 여러 클라이언트를 연결해 FIFO 매칭, 세션 분리, 취소, 퇴장, 재매칭, 연결 종료 정리, 잘못된 요청을 검증합니다. TCP 검증은 임시 포트를 사용하므로 기본 포트의 일치까지 검사하지 않습니다.
+Unity 검증 전에는 에디터를 종료합니다. `-Gameplay`는 별도 프로젝트 복사본에서 인증·로비·UI 입력·솔로 플레이를 자동 검사합니다. HTTP 검증은 테스트 서버를 사용하며 실제 API 서버의 기능 구현을 뜻하지 않습니다.
 
 프로토콜을 바꾼 뒤에는 `Tools/Generate-Protocol.ps1`로 C# 메시지를 갱신합니다.
 
 ## 솔로 디펜스
 
-`Assets/Scenes/SoloDefense.unity`를 열고 Play → 전투 시작.
+`Assets/Scenes/SoloDefense.unity`를 열고 Play → START DEFENSE.
 WASD/방향키 이동, 마우스 조준·왼쪽 버튼 사격, Space 대시, Esc 일시정지.
 웨이브 종료마다 1/2/3으로 무료 카드 1장을 골라 발사체 수·피해·발사 속도를 누적 강화합니다.
 선택 전에는 준비 시간이 멈추고, 선택 후 8초간 준비 시간이 흐릅니다.
@@ -102,6 +104,6 @@ WASD/방향키 이동, 마우스 조준·왼쪽 버튼 사격, Space 대시, Esc
 
 게임 모드는 `dedicated_battle`과 `solo_defense`이며 공통 싱글톤이 플레이 정보를 추적합니다.
 현재 새로 구현한 플레이는 솔로 디펜스입니다. 종료 시 게임 로그 저장과 보상을 실제 API로 요청하고,
-서버가 없거나 응답이 실패하면 각각 실패를 표시합니다. 현재 API 서버에도 해당 라우트가 없어 로컬 API 실행 중에는 HTTP 404로 실패합니다. 상세 실행법과 데이터 계약은
+로그인 세션이 없으면 요청을 보내지 않으며, 서버 요청 실패도 화면에 표시합니다. 현재 API 서버에는 해당 라우트가 없습니다. 상세 실행법과 데이터 계약은
 [Defense README](Assets/Scripts/Defense/README.md), [API 명세](../docs/design/API_IMPLEMENTATION.md),
 [남은 클라이언트 작업](Docs/CLIENT_TASKS.md)을 참고하세요.

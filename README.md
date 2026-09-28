@@ -53,7 +53,7 @@ flowchart LR
 
 | 경로 | 역할 | 현재 상태 |
 | --- | --- | --- |
-| [client](client/README.md) | Unity 6000.3.11f1 게임 클라이언트 | 솔로 디펜스, 로비 UI, TCP 매칭 테스트 |
+| [client](client/README.md) | Unity 6000.3.11f1 게임 클라이언트 | 로그인·로비 HTTP 클라이언트, MVC 솔로 디펜스, TCP 매칭 테스트 |
 | [socket-server](socket-server/README.md) | C++20 / WinSock2 / IOCP 서버 | FIFO 매칭·세션·에코; 전투 틱·인증 미구현 |
 | [api-server](api-server/README.md) | ASP.NET Core 10 / EF Core / MySQL | DB 연결 확인; 로비·보상 API 미구현 |
 | [contracts](contracts/README.md) | TCP·HTTP 통신 계약 | 스키마·코드 생성·구현된 HTTP 명세 |
@@ -127,17 +127,25 @@ dotnet user-secrets set 'ConnectionStrings:DefaultConnection' 'Server=localhost;
 ```
 
 - **Unity 실행**: Unity Hub에서 `client` 폴더 열기
+  - `Login`: 빌드 시작 씬, 로그인 성공 후 로비 이동
   - `SoloDefense`: 솔로 게임
   - `ConnectionTest`: 두 클라이언트의 TCP 매칭
-  - `Lobby`: 로비 UI
-- **결과·보상 API**: 미구현, 로컬 API 실행 중에도 HTTP 404 반환
-  - 게임 로그의 서버 저장·보상 지급 확인 불가
-- **클라 API 주소**: HTTP는 Editor/Development Build에서만 허용, 배포 시 HTTPS 지정
+  - `Lobby`: 프로필·인벤토리·아이템 사용, 솔로 씬 진입
+- **인증·로비·결과·보상 API**: 서버 미구현, 클라 요청 코드만 구현
+  - 로그인과 실제 계정 데이터 조회·저장·보상 지급은 서버 구현 필요
+- **클라 API 주소**: `LoginController.api_root`, 기본값 `https://127.0.0.1:18080/api/v1`
+  - 로컬 API 기본 주소 `http://localhost:5089`와 다름, [클라 로그인 계약](client/Docs/LOGIN.md) 참고
+  - 로그인 세션의 주소·토큰을 후속 요청에 사용
+  - HTTP는 Editor/Development Build의 loopback에서만 허용, 배포 시 HTTPS 지정
 - **Unity 검증**: 에디터 종료 후 컴파일·씬의 누락 스크립트 확인
 
 ```powershell
 ./tools/Test-Unity.ps1
+./tools/Test-Unity.ps1 -Gameplay    # 인증·로비·UI 입력·솔로 플레이 자동 검증
 ```
+
+- **플레이 검증**: 임시 프로젝트에서 실행, HTTP는 테스트 서버 사용, UI 입력 검사는 Direct3D 11 사용
+  - [클라이언트 갱신 검증 결과](docs/CLIENT_IMPORT_VALIDATION.md)
 
 - **VS Code**: `zpd.code-workspace`에서 프로젝트별 디버깅·루트 작업 사용
 

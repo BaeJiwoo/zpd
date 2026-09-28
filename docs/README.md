@@ -6,6 +6,7 @@
 - [전체 구조](ARCHITECTURE.md): 현재 구현과 각 실행 프로젝트의 책임.
 - [이력 통합과 복구](MIGRATION.md): 원본 브랜치·커밋, 백업, 새 작업 위치.
 - [이전 검증 결과](VALIDATION.md): 빌드·통합 테스트·Unity·새 복제본 검증과 범위.
+- [클라이언트 갱신 검증](CLIENT_IMPORT_VALIDATION.md): 로그인·MVC 클라 반영, 플레이·입력·소켓 통신 검사 결과와 범위.
 - [문서와 코드 대조 결과](DOCUMENTATION_REVIEW.md): 표현 수정 내역, 코드에 남아 있는 차이와 검증 한계.
 - [GitHub 업로드 점검](UPLOAD_CHECK.md): 제외 규칙, 비밀값 패턴, 기존 이력과 파일 크기 확인 결과.
 - [기여 규칙](../CONTRIBUTING.md): 브랜치, 검증, Unity 파일과 계약 변경.

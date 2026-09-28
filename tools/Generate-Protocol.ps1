@@ -57,10 +57,10 @@ $csharp += @('    }', '}')
 $outputs = @{
     'socket-server/common/include/MessageCode.hpp' = $cppMessages -join "`n"
     'socket-server/common/include/ErrorCode.hpp' = $cppErrors -join "`n"
-    'client/Assets/Scripts/Networking/Generated/ProtocolCodes.cs' = $csharp -join "`n"
+    'client/Assets/Scripts/Networking/Tcp/Generated/ProtocolCodes.cs' = $csharp -join "`n"
 }
 foreach ($file in Get-ChildItem $tempRoot -Filter '*.cs') {
-    $outputs['client/Assets/Scripts/Networking/Generated/' + $file.Name] = [IO.File]::ReadAllText($file.FullName)
+    $outputs['client/Assets/Scripts/Networking/Tcp/Generated/' + $file.Name] = [IO.File]::ReadAllText($file.FullName)
 }
 foreach ($entry in $outputs.GetEnumerator()) {
     $path = Join-Path $RepoRoot $entry.Key

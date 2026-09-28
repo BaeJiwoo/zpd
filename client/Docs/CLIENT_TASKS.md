@@ -1,13 +1,20 @@
 # API 연결을 위한 클라이언트 작업 목록
 
-작성일: 2026-09-22. `[ ]` 항목은 **미구현 작업**이다. 이 문서 작성으로 구현 완료를 의미하지 않는다.
-API 계약 제안은 [API_IMPLEMENTATION.md](../../docs/design/API_IMPLEMENTATION.md), 현재 연결 지점은
+초안 작성일: 2026-09-22. 아래 체크리스트는 당시 계획과 진행 기록이며, 이후 구현된 항목도 포함한다.
+API 설계 초안은 [API_IMPLEMENTATION.md](../../docs/design/API_IMPLEMENTATION.md), 소셜 연결 지점은
 [API_INTEGRATION.md](../Assets/Scripts/Lobby/API_INTEGRATION.md)를 참고한다.
 
 ## 현재 상태
 
+- 2026-09-28 모노레포 반영: 로그인·계정 세션·공통 HTTP 전송, 로비 프로필·인벤토리·아이템 사용 요청 구현.
+- 로비·솔로 디펜스 MVC 분리, 로그인 → 로비 → 솔로 디펜스 및 로비 복귀 연결.
+- API 서버에는 DB 연결 확인만 구현되어 있어 인증·로비·보상 서버 연동은 후속 작업.
+- 최신 구현·검증 기준: [로그인](LOGIN.md), [네트워킹](NETWORKING.md), [로비 서비스](LOBBY_SERVICES.md), [MVC 구조](MVC_ARCHITECTURE.md).
+
+## 초안 작성 당시 상태와 작업 계획
+
 - 에디터 생성 로비, 프로필·소셜 4탭·인벤토리·캐릭터 선택 UI와 슬라이드가 존재한다.
-- 로비 플레이어 데이터는 placeholder. 로비용 서버 전송기/응답기, 인증, 프로필·인벤토리 전체 바인딩은 없다. 솔로 결과·보상의 HTTP 전송기는 별도로 존재한다.
+- 플레이어 데이터는 placeholder. 서버 전송기/응답기, 인증, 프로필·인벤토리 전체 바인딩은 없다.
 - 캐릭터는 원화 4종 미리보기와 `BindOwnership` / `ApplyConfirmedCharacter` 연결 지점이 있다.
 - 하트는 창 열기/새로고침 트리거, 개별 작업 로그, 메모리 중복 방지와 오래된 응답 차단만 있다.
 - TCP 매칭과 ConnectionTest는 존재하지만 로비 전투 버튼은 아직 로그만 출력한다.
@@ -30,7 +37,7 @@ API 계약 제안은 [API_IMPLEMENTATION.md](../../docs/design/API_IMPLEMENTATIO
 ### C02. 인증·통신 수명과 HTTP 전송 계층
 
 - [ ] 제안 위치 `Assets/Scripts/Services/`: API 설정, DTO, HTTP client, 인증 세션, 서비스 인터페이스를 추가한다.
-- [ ] 솔로 전송기에 쓰는 UnityWebRequest를 참고해 공통 HTTP 구현을 정하고 취소·타임아웃·오류 파싱·토큰 만료를 처리한다.
+- [ ] UnityWebRequest 등 HTTP 구현을 선택하고 취소·타임아웃·오류 파싱·토큰 만료를 처리한다.
 - [ ] 재시도는 조회와 멱등 mutation을 구분한다. 결과 불명 mutation은 같은 키로 복구한다.
 - [ ] HTTP와 TCP 콜백을 Unity 메인 스레드로 전달한다. 파괴/비활성 UI를 뒤늦게 갱신하지 않는다.
 - [ ] 로그에 토큰이나 인증 정보를 남기지 않는다.
@@ -53,7 +60,7 @@ API 계약 제안은 [API_IMPLEMENTATION.md](../../docs/design/API_IMPLEMENTATIO
 
 ### C04. 프로필·로비 요약
 
-대상: `LobbyController`, `LobbySceneBuilder`.
+대상: `LegacyLobbyController`, `LegacyLobbySceneBuilder`.
 
 - [ ] `GET /me` 결과를 이름, 레벨, 경험치, 경기/승패, 현재 캐릭터 표시에 바인딩한다.
 - [ ] 현재 빌더에만 존재하는 Text들을 명시적 view 참조/컴포넌트로 묶는다.
@@ -63,7 +70,7 @@ API 계약 제안은 [API_IMPLEMENTATION.md](../../docs/design/API_IMPLEMENTATIO
 
 ### C05. 친구·검색·추천·요청
 
-대상: `LobbyController.RefreshSocial/SearchFriends`, `LobbySocialSlot`.
+대상: `LegacyLobbyController.RefreshSocial/SearchFriends`, `LobbySocialSlot`.
 
 - [ ] 친구/검색/추천 조회를 실제 서비스에 연결한다. 추천 새로고침은 첫 페이지를 다시 조회한다.
 - [ ] 서버 `relationship`과 `canRequestFriend`로 ADD FRIEND 상태를 결정한다.
@@ -77,7 +84,7 @@ API 계약 제안은 [API_IMPLEMENTATION.md](../../docs/design/API_IMPLEMENTATIO
 
 ### C06. 하트 일괄 자동 송수신
 
-대상: `LobbyHeartAutomation`, `LobbyController.OpenFriends/RefreshSocial`, 하트 탭.
+대상: `LobbyHeartAutomation`, `LegacyLobbyController.OpenFriends/RefreshSocial`, 하트 탭.
 
 - [ ] 권장 `POST /me/hearts/sync` 계약 채택 여부를 확정한다.
 - [ ] 창 열기/새로고침을 sync 한 요청으로 연결하고 진행 중 중복 트리거를 합친다.
@@ -105,7 +112,7 @@ API 계약 제안은 [API_IMPLEMENTATION.md](../../docs/design/API_IMPLEMENTATIO
 
 ### C08. 인벤토리·장비
 
-대상: `LobbySceneBuilder.BuildInventory`, 신규 inventory view/service.
+대상: `LegacyLobbySceneBuilder.BuildInventory`, 신규 inventory view/service.
 
 - [ ] 고정 12개 placeholder 슬롯을 서버 아이템 인스턴스에 재바인딩한다.
 - [ ] 현재 `InspectItem`은 미연결 안내만 표시하므로 선택 상세/슬롯/수량 UI를 추가한다.
@@ -119,7 +126,7 @@ API 계약 제안은 [API_IMPLEMENTATION.md](../../docs/design/API_IMPLEMENTATIO
 
 ### C09. 테스트 통신에서 로비 전투 입장으로 연결
 
-대상: `MatchmakingClient`, `NetworkClient`, `Development/PacketHandler`, `LobbyController.EnterBattle`.
+대상: `MatchmakingClient`, `NetworkClient`, `Development/PacketHandler`, `LegacyLobbyController.EnterBattle`.
 
 - [ ] `MatchmakingClient.HandleConnected()`의 연결 즉시 RequestMatch 동작을 분리한다.
 - [ ] 개발용 ConnectionTest와 실제 로비가 공유할 인증된 연결/이벤트 라우터를 만든다.
@@ -132,8 +139,8 @@ API 계약 제안은 [API_IMPLEMENTATION.md](../../docs/design/API_IMPLEMENTATIO
 
 ### C10. 전투 이벤트와 참여 수명
 
-- [ ] 루트 `contracts/realtime`의 합의한 스키마·코드를 수정하고 루트 `tools/Generate-Protocol.ps1`로 생성한다.
-  새 스키마는 `codegen.json`의 `csharpSchemas`와 소켓 서버 CMake에도 반영한다. `Assets/Scripts/Networking/Generated/`의 파일은 수동 편집하지 않는다.
+- [ ] 서버와 합의한 protobuf 원본을 수정하고 `Tools/Generate-Protocol.ps1`로 생성한다.
+  `Generated/Matchmaking.cs`를 수동 편집하지 않는다.
 - [ ] 서버 사망 이벤트를 처리하고 해당 참여를 사망/정산 대기로 전환한다.
 - [ ] 네트워크 예외나 연결 종료를 사망으로 임의 판정하지 않는다.
 - [ ] 부활/재입장 정책에 맞춰 participation/life 식별자를 관리한다.
@@ -185,9 +192,8 @@ API 계약 제안은 [API_IMPLEMENTATION.md](../../docs/design/API_IMPLEMENTATIO
 
 - [x] 싱글 씬 탑다운 디펜스와 Editor MenuItem 생성기.
 - [x] 캐릭터 스타일의 들판 배경, 화면 채움, 피난길 신호석 내러티브.
-- [x] 판 내 골드 드롭/회수, 웨이브 종료 후 무료 카드 선택과 8초 준비 보급, 회복·비콘 수리.
-- [x] 발사체 수·피해·발사 속도 누적 강화, 병종별 행동, 웨이브 기반 능력치와 사격병 투사체.
-- [x] 11종 원본 전투 효과음, 음소거, 골드·상점·강화 카드 기록을 결과 로그에 추가.
+- [x] 판 내 골드 드롭/회수, 제한 시간 보급 상점, 총 구매·교체·회복, 적의 시간/웨이브 강화.
+- [x] 11종 원본 전투 효과음, 음소거, 골드·상점·무기 기록을 결과 로그에 추가.
 - [x] 두 모드 공통 GameSessionTracker 싱글톤, 불변 종료 스냅샷 및 이벤트/집계.
 - [x] 게임 로그 저장과 보상 실제 요청, 각각의 실패 표시, 동일 ID 수동 재시도.
 - [x] 미저장 게임 로그의 로컬 파일 백업, 서버 저장 확인 후 제거.
